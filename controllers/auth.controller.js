@@ -1,7 +1,10 @@
 import User from '../models/user_model.js'
 import bcryptjs from "bcryptjs"
+import { errorhandler } from '../utils/error.js';
 
-export const signup = async(req, res) =>{
+// next is used for using the middleware made in index.js
+
+export const signup = async(req, res, next) =>{
     // console.log(req.body)
     // res.send(req.body)
     // var bcrypt = require('bcryptjs');
@@ -15,7 +18,11 @@ export const signup = async(req, res) =>{
         await newUser.save();
         res.status(201).json("User created succesfully")
     } catch (error) {
-        res.status(500).json(error.message)
-    }
+        // res.status(500).json(error.message)   -- this was without using middleware
+        next(error)
+        // above next error is used to put the error message using middleware applied in index.js
 
+// below code is to add errors manually
+        // next(errorhandler(550, "Error from the function"))
+    }
 }
