@@ -1,5 +1,6 @@
 import User from '../models/user_model.js'
 import bcryptjs from "bcryptjs"
+import jwt from 'jsonwebtoken';
 import { errorhandler } from '../utils/error.js';
 
 // next is used for using the middleware made in index.js
@@ -24,5 +25,28 @@ export const signup = async(req, res, next) =>{
 
 // below code is to add errors manually
         // next(errorhandler(550, "Error from the function"))
+    }
+}
+
+export const signin = async(req, res, next) =>{
+    const {email, password} = req.body;
+
+    try {
+        const validUser = await User.findOne({email});
+        if(!validUser) return next(errorhandler(404, 'User Not Found'))
+    
+        const validPassword = bcryptjs.compareSync(password, validUser.password)
+        if(!validPassword) return next(errorhandler(401, 'Wrong Credentials'))
+
+        // authentication process:-
+        const token = jwt.sign({id:validUser._id}, process.env.JWT_SECRET)
+
+        // destructuring the password(removing password and will return rest in our auth cookie section)
+        const {password: pass, ...rest} = validUser._doc;
+        
+        res.cookie('access token', token, {httpOnly: true}).status(200).json(rest)
+
+    } catch (error) {
+        next(error)
     }
 }
