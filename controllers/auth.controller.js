@@ -44,7 +44,7 @@ export const signin = async(req, res, next) =>{
         // destructuring the password(removing password and will return rest in our auth cookie section)
         const {password: pass, ...rest} = validUser._doc;
         
-        res.cookie('access token', token, {httpOnly: true}).status(200).json(rest)
+        res.cookie('access_token', token, {httpOnly: true}).status(200).json(rest)
 
     } catch (error) {
         next(error)
@@ -60,7 +60,7 @@ export const google = async(req, res, next) =>{
 
         const {password: pass, ...rest} = user._doc;
 
-        res.cookie('access token', token, {httpOnly: true})
+        res.cookie('access_token', token, {httpOnly: true})
         .status(200)
         .json(rest)
        } 
@@ -75,7 +75,7 @@ export const google = async(req, res, next) =>{
 
         const token = jwt.sign({id: newUser._id}, process.env.JWT_SECRET)
         const {password: pass, ...rest} = newUser._doc
-        res.cookie('access token', token, {httpOnly: true}).status(200).json(rest)
+        res.cookie('access_token', token, {httpOnly: true}).status(200).json(rest)
        }
     } catch (error) {
         next(error)
